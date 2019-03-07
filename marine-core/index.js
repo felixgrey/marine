@@ -1,12 +1,11 @@
-export * from './Utils';
-
-import Agent from 'StoreAgent';
+export * from 'Utils';
 import Store from 'Store';
+import Agent from 'Agent';
 import Transformer from 'Transformer';
 
 export {
-  Agent,
   Store,
+  Agent,
   Transformer
 };
 

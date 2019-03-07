@@ -16,7 +16,13 @@ export default class Agent {
   }
 }
 
-const declardAgent = {};
+const declardAgent = {
+  '$Store': class StoreAgent extends Agent{
+    constructor(option) {
+      super(option);
+    }
+  }
+};
 
 Agent.declare = function(name) {
   if(declardAgent[name]){
@@ -58,4 +64,13 @@ Object.defineProperty(Agent, 'View', {
   get: () => {
     return _View;
   }
-})
+});
+
+Agent.store = function(config, option = {}) {
+  return function(clazz) {
+    option.$storeConfig = config;
+    return Agent.component('$Store', option);
+  }
+}
+
+
