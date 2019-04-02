@@ -1,1 +1,1 @@
-powershell.exe -NoExit  -Command "cd D:\work\vue\fem2-vue\ | npm start" 
+powershell.exe -NoExit  -Command "cd D:\work\marine\ | npm start" 
