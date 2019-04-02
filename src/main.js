@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
+import ElementUI from 'element-ui'
 
 Vue.use(VueRouter)
+Vue.use(ElementUI)
 Vue.config.productionTip = false
 
 new Vue({
