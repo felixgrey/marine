@@ -342,8 +342,7 @@ export default class Models {
     this._init(config);
   }
   
-  _init(config) {
-    const {when} = this.myController;
+  _init(config) {  
     const $Runner = config.$Runner;
     if($Runner) {
       for (let runnerName in $Runner) {
@@ -351,7 +350,9 @@ export default class Models {
         this.runnerNames.push(runnerName);
       }
     }
-
+    
+    const {when} = this.myController;
+    
     for (let modelName in config) {
       if (/^\$|^_/g.test(modelName)) {
         continue;
