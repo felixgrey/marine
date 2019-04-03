@@ -325,6 +325,7 @@ export default class Models {
     this._lagFetchTimeoutIndex = {};
     this.model = {};
     this.modelNames = [];
+    this.runnerNames = [];
     
     this._ControllerClass = ControllerClass;
     this._executor = new ExecutorClass();
@@ -343,7 +344,14 @@ export default class Models {
   
   _init(config) {
     const {when} = this.myController;
-    
+    const $Runner = config.$Runner;
+    if($Runner) {
+      for (let runnerName in $Runner) {
+        this._executor.runner(runnerName, $Runner[runnerName]);
+        this.runnerNames.push(runnerName);
+      }
+    }
+
     for (let modelName in config) {
       if (/^\$|^_/g.test(modelName)) {
         continue;
@@ -470,6 +478,12 @@ export default class Models {
   }
   
   _fetch(name, ...args) {
+    if (this._invalid) {
+      return;
+    }
+    if(this.runnerNames.indexOf(name) > -1){
+      return this._executor.run(name, ...args);
+    }
     return Models.globalModels._executor.run(name, ...args);
   }
   
@@ -653,6 +667,7 @@ export default class Models {
     this._fetchIndex = null;
     this.model = null;
     this.modelNames = null;
+    this.runnerNames = null;
     this._lagFetchTimeoutIndex = null;
   } 
 }
