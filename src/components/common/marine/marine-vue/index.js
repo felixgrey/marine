@@ -1,7 +1,6 @@
-import {Models, $Transform, blank, noValue} from '@/components/marine-core';
+import Models from '@/components/marine-models/Models.js';
 import $ from 'jquery';
 
-export {Models, $Transform, blank, noValue};
 
 // 随机函数名
 const _callback =`_wrapedEmitterCallback${Date.now()}`;

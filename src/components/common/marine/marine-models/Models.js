@@ -119,7 +119,7 @@ export class Executor {
   }
 }
 
-class Controller {
+export class Controller {
   constructor(_models) {
     this._models = _models;
     this._emitter = _models._emitter;
@@ -301,7 +301,7 @@ class Controller {
 }
 
 export default class Models {
-  constructor(config) {
+  constructor(config, ControllerClass = Controller, ExecutorClass = Executor) {
     if (!_Emitter) {
       throw new Error('must implement Emitter first');
     }
@@ -326,7 +326,8 @@ export default class Models {
     this.model = {};
     this.modelNames = [];
     
-    this._executor = new Executor();
+    this._ControllerClass = ControllerClass;
+    this._executor = new ExecutorClass();
     
     this._emitter = new _Emitter();
     this._config = config;
@@ -630,7 +631,7 @@ export default class Models {
     if(this._invalid) {
       return;
     }
-    return new Controller(this);
+    return new this._ControllerClass(this);
   }
   
   destroy() {
