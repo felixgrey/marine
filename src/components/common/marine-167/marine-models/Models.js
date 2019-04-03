@@ -736,6 +736,7 @@ Object.defineProperty(Models, 'Emitter', {
       writable: false
     });
     
+    Models.globalModel = Models.globalModels.model;
     Models.globalRunner = (...args) => Models.globalModels._executor.runner(...args);  
   },
   get: () => {
