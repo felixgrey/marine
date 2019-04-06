@@ -370,6 +370,10 @@ export default class Models {
         dependence = []
       } = config[modelName];
       
+      if (_default !== undefined) {
+        this.model[`${modelName}List`] = [].concat(_default);
+      }
+      
       if (!noValue(clear)) {
         clear = [].concat(clear);
         clear.forEach(name => {
@@ -392,7 +396,7 @@ export default class Models {
         snapshot = [].concat(snapshot);
         snapshot.forEach(name => {
           when(name, () => {
-            this.model[`${modelName}List`] =JSON.parse(JSON.stringify(this.model[`${name}List`]));
+            this.model[`${modelName}List`] = JSON.parse(JSON.stringify(this.model[`${name}List`]));
           })
         })      
       }
@@ -424,15 +428,18 @@ export default class Models {
             if (this._invalid) {
               return;
             }
+            
             if (this._singleFetch && this.model[`${modelName}Status`] === 'loading') {
               errorLog(`can not fetch ${modelName} when it is loading`);
               return;
             }
+            
             this.model[`${modelName}Status`] = 'loading';
             
             if(!this._fetchIndex[modelName]){
               this._fetchIndex[modelName] = 0;
             }
+            
             this._fetchIndex[modelName]++;
             const myRequestIndex = this._fetchIndex[modelName];
             
@@ -447,17 +454,21 @@ export default class Models {
               if (this._invalid) {
                 return;
               }
+              
               if(myRequestIndex !== this._fetchIndex[modelName]) {
                 return;
               }
+              
               if(newModel === undefined){
                 throw new Error(`${modelName} can not be undefined`);
               }
+              
               this.model[`${modelName}List`] = [].concat(newModel);
             }).catch((e) => {
               if (this._invalid) {
                 return;
               }
+              
               this.model[`${modelName}Status`] = 'set';
               throw new Error(e);
             });
@@ -472,8 +483,6 @@ export default class Models {
         });
         submitCallback();
         
-      } else if (_default !== undefined) {
-        this.model[`${modelName}List`] = [].concat(_default);
       }
     }
   }
@@ -482,9 +491,11 @@ export default class Models {
     if (this._invalid) {
       return;
     }
+    
     if(this.runnerNames.indexOf(name) > -1){
       return this._executor.run(name, ...args);
     }
+    
     return Models.globalModels._executor.run(name, ...args);
   }
   
@@ -596,14 +607,17 @@ export default class Models {
       set: (newValue) => {
         if(this._invalid) {
           return;
-        }     
+        }
+        
         if(newValue === undefined) {
           throw new Error(`${name}List can not be undefined`);
         }
+        
         const oldValue = this._data[name];
         if (typeof newValue === 'function') {
           newValue = newValue(oldValue);
         }
+        
         if(this._checkChange(newValue, oldValue)){
           this._data[name] = newValue;
           if(this._status[name] !== 'set') {
@@ -623,15 +637,18 @@ export default class Models {
         if(this._invalid) {
           return 'undefined';
         }
+        
         return this._status[name] || 'undefined';
       },
       set: (newStatus) => {
         if(this._invalid) {
           return;
         }
+        
         if(statusList.indexOf(newStatus) === -1) {
           throw new Error(`${name}Status must one of ${statusList.join(',')}`);
         }
+        
         const oldStatus = this._status[name];
         if(oldStatus !== newStatus){
           this._status[name] = newStatus;
@@ -646,6 +663,7 @@ export default class Models {
     if(this._invalid) {
       return;
     }
+    
     return new this._ControllerClass(this);
   }
   
@@ -653,6 +671,7 @@ export default class Models {
     if(this._invalid) {
       return;
     }
+    
     this._invalid = true;
     Object.keys(this._lagFetchTimeoutIndex).forEach(index => {
       clearTimeout(index);
@@ -683,6 +702,7 @@ Models.componentView = (config = {}, getName = () => blank,getModels = () => bla
       if(!models) {
        throw new Error('props of component need models');
       }
+      
       that.$Name = getName.call(that)  ;
       that.$Name = noValue(that.$Name) ? '' : that.$Name;
       that.$Models = models;
