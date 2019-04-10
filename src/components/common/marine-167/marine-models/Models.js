@@ -179,6 +179,10 @@ export class Controller {
     }
   }
   
+  next = (name, callback) => {
+    return this.once(`$dataChange:${name}`, callback);
+  }
+  
   watch = (callback, _once = false) => {
     if (this._invalid) {
       return;
@@ -291,6 +295,11 @@ export class Controller {
     return this._models._submit(...args);
   }
   
+  refresh = (name) = > {
+    const fun = this._models._fetchFun[name]
+    fun && fun(); 
+  }
+  
   fitlerModel(filter = () => true) {
     if (this._invalid) {
       return;
@@ -323,6 +332,7 @@ export default class Models {
     
     this._fetchIndex = {};  
     this._lagFetchTimeoutIndex = {};
+    this._fetchFun = {};
     this.model = {};
     this.modelNames = [];
     this.runnerNames = [];
@@ -361,7 +371,7 @@ export default class Models {
       this.modelNames.push(modelName);
       
       let {
-        type,
+        type = 'static',
         default: _default,
         clear,
         reset,
@@ -401,7 +411,7 @@ export default class Models {
         })      
       }
       
-      if (!noValue(type)) {
+      if (!noValue(type) && type !== 'static') {
         
         const submitCallback = () => {
           const paramModel = {};
@@ -482,7 +492,7 @@ export default class Models {
           when(_name, submitCallback);
         });
         submitCallback();
-        
+        this._fetchFun[modelName] = submitCallback;
       }
     }
   }
@@ -508,10 +518,13 @@ export default class Models {
       type,
       params = {},
       lock = [],
+      refresh = [],
       data = {}
     } = param;
     
-    const oldList = lock.map(name => {  
+    const _lock = lock.concat(refresh);
+    
+    const oldList = _lock.map(name => {  
       const nameStatus = `${name}Status`;
       const old = this.model[nameStatus];
       this.model[nameStatus] = 'locked';
@@ -521,6 +534,9 @@ export default class Models {
     const oldCallback = () => {
       oldList.forEach(({old, nameStatus}) => {
         this.model[nameStatus] = old;
+      });
+      refresh.forEach(name => {
+        this._fetchFun[name] && this._fetchFun[name]();
       });
     }
     
@@ -689,6 +705,7 @@ export default class Models {
     this.modelNames = null;
     this.runnerNames = null;
     this._lagFetchTimeoutIndex = null;
+    this._fetchFun = null;
   } 
 }
 
